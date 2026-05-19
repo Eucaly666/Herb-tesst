@@ -279,6 +279,21 @@
       color: #5a4030;
       line-height: 1.9;
     }
+        /* 品牌露出 */
+    .brand-line {
+      margin-top: 28px;
+      padding-top: 20px;
+      border-top: 1px solid #e8e0d4;
+      text-align: center;
+      font-size: 13px;
+      color: #8a7a6a;
+      line-height: 1.8;
+    }
+    .brand-line strong {
+      color: #4a7c2f;
+      font-weight: 600;
+    }
+
 
     /* 重新测试 */
     .btn-retest {
@@ -781,6 +796,10 @@ function showResult() {
       <div class="plant-title">【种植建议】</div>
       <div class="plant-text">${result.plant}</div>
     </div>
+        <div class="brand-line">
+      <strong>自然植得工作室</strong>｜为人与自然间的创造性连接在行动！
+    </div>
+
     `;
     card.classList.add('fade-in');
   } catch(e) {
