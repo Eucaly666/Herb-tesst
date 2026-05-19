@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>香草人格测试</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+      background: #f5f0e8;
+      color: #3a2e1e;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px 16px 60px;
+    }
+
+    /* 封面 */
+    .cover {
+      text-align: center;
+      padding: 60px 20px;
+    }
+    .cover-icon { font-size: 64px; margin-bottom: 20px; }
+    .cover h1 {
+      font-size: 28px;
+      font-weight: 700;
+      color: #2d4a1c;
+      margin-bottom: 12px;
+      letter-spacing: 2px;
+    }
+    .cover p {
+      font-size: 15px;
+      color: #6b5c4a;
+      line-height: 1.8;
+      margin-bottom: 8px;
+    }
+    .cover-divider {
+      width: 40px; height: 2px;
+      background: #8fbc6a;
+      margin: 20px auto;
+      border-radius: 2px;
+    }
+    .cover-note {
+      font-size: 13px;
+      color: #9b8b7a;
+      margin-top: 24px;
+    }
+    .btn-start {
+      display: inline-block;
+      margin-top: 32px;
+      padding: 14px 40px;
+      background: #4a7c2f;
+      color: #fff;
+      border: none;
+      border-radius: 30px;
+      font-size: 16px;
+      cursor: pointer;
+      letter-spacing: 2px;
+      transition: background 0.3s;
+    }
+    .btn-start:hover { background: #3d6626; }
+
+    /* 进度条 */
+    .progress-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+      font-size: 13px;
+      color: #8a7a6a;
+    }
+    .progress-bar-bg {
+      flex: 1;
+      height: 4px;
+      background: #d8cfc2;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: #8fbc6a;
+      border-radius: 2px;
+      transition: width 0.4s ease;
+    }
+
+    /* 题目 */
+    .question-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 28px 24px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+    .q-number {
+      font-size: 12px;
+      color: #8fbc6a;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+    .q-text {
+      font-size: 17px;
+      color: #2d4a1c;
+      line-height: 1.7;
+      margin-bottom: 24px;
+      font-weight: 500;
+    }
+    .q-dim-label {
+      display: inline-block;
+      font-size: 11px;
+      color: #9b8b7a;
+      background: #f0ebe2;
+      padding: 3px 10px;
+      border-radius: 20px;
+      margin-bottom: 16px;
+    }
+    .option {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px 16px;
+      border: 1.5px solid #e8e0d4;
+      border-radius: 12px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 15px;
+      line-height: 1.6;
+      color: #4a3a28;
+    }
+    .option:hover { border-color: #8fbc6a; background: #f8f5ef; }
+    .option.selected {
+      border-color: #4a7c2f;
+      background: #eef5e8;
+    }
+    .option-letter {
+      flex-shrink: 0;
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      background: #e8e0d4;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 600;
+      color: #8a7a6a;
+      transition: all 0.2s;
+      margin-top: 1px;
+    }
+    .option.selected .option-letter {
+      background: #4a7c2f;
+      color: #fff;
+    }
+
+    /* 导航按钮 */
+    .nav-btns {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+    }
+    .btn-prev, .btn-next {
+      flex: 1;
+      padding: 13px;
+      border-radius: 30px;
+      font-size: 15px;
+      cursor: pointer;
+      border: none;
+      transition: all 0.3s;
+    }
+    .btn-prev {
+      background: #e8e0d4;
+      color: #6b5c4a;
+    }
+    .btn-prev:hover { background: #d8cfc2; }
+    .btn-next {
+      background: #4a7c2f;
+      color: #fff;
+    }
+    .btn-next:hover { background: #3d6626; }
+    .btn-next:disabled {
+      background: #c8d8be;
+      cursor: not-allowed;
+    }
+
+    /* 结果页 */
+    .result-page { display: none; }
+    .result-card {
+      background: #fff;
+      border-radius: 20px;
+      padding: 36px 28px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .result-emoji { font-size: 56px; margin-bottom: 16px; }
+    .result-type {
+      font-size: 26px;
+      font-weight: 700;
+      color: #2d4a1c;
+      margin-bottom: 4px;
+      letter-spacing: 2px;
+    }
+    .result-mbti {
+      font-size: 14px;
+      color: #8fbc6a;
+      font-weight: 600;
+      letter-spacing: 2px;
+      margin-bottom: 20px;
+    }
+    .result-divider {
+      width: 36px; height: 2px;
+      background: #8fbc6a;
+      margin: 16px auto;
+      border-radius: 2px;
+    }
+
+    /* 人格属性区块 */
+    .attr-block {
+      background: #f8f5ef;
+      border-radius: 12px;
+      padding: 16px 20px;
+      text-align: left;
+      margin-bottom: 12px;
+    }
+    .attr-title {
+      font-size: 12px;
+      color: #8fbc6a;
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+    .attr-text {
+      font-size: 14px;
+      color: #5a4a38;
+      line-height: 1.9;
+    }
+
+    /* 人格解读区块 */
+    .insight-block {
+      background: #eef5e8;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: left;
+      margin-top: 16px;
+    }
+    .insight-title {
+      font-size: 13px;
+      color: #4a7c2f;
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+    }
+    .insight-text {
+      font-size: 15px;
+      color: #3a2e1e;
+      line-height: 1.9;
+    }
+
+    /* 种植建议区块 */
+    .plant-block {
+      background: #fef9f0;
+      border: 1px solid #f0e0c0;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: left;
+      margin-top: 16px;
+    }
+    .plant-title {
+      font-size: 13px;
+      color: #a07830;
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+    }
+    .plant-text {
+      font-size: 15px;
+      color: #5a4030;
+      line-height: 1.9;
+    }
+
+    /* 重新测试 */
+    .btn-retest {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      background: #e8e0d4;
+      color: #6b5c4a;
+      border: none;
+      border-radius: 30px;
+      font-size: 15px;
+      cursor: pointer;
+      margin-top: 16px;
+      transition: background 0.3s;
+    }
+    .btn-retest:hover { background: #d8cfc2; }
+
+    /* 分享提示 */
+    .share-tip {
+      text-align: center;
+      font-size: 13px;
+      color: #9b8b7a;
+      margin-top: 24px;
+      line-height: 1.7;
+    }
+
+    /* 隐藏 */
+    .hidden { display: none !important; }
+
+    /* 动画 */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in { animation: fadeIn 0.5s ease forwards; }
+
+    /* loading */
+    .loading {
+      text-align: center;
+      padding: 60px 20px;
+      color: #8fbc6a;
+      font-size: 15px;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <!-- 封面 -->
+  <div id="cover" class="cover">
+    <div class="cover-icon">🌿</div>
+    <h1>香草人格测试</h1>
+    <div class="cover-divider"></div>
+    <p>16道题，找到你的香草人格</p>
+    <p>每株香草都有自己的性格<br>你也是</p>
+    <p class="cover-note">约需 3 分钟 · 16道选择题 · 16种人格类型</p>
+    <button class="btn-start" onclick="startTest()">开始测试</button>
+  </div>
+
+  <!-- 测试区 -->
+  <div id="test-area" class="hidden">
+    <div class="progress-wrap">
+      <span id="progress-text">第 1 / 16 题</span>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
+      </div>
+    </div>
+
+    <div class="question-card fade-in" id="question-card">
+      <div class="q-number" id="q-number"></div>
+      <div class="q-dim-label" id="q-dim-label"></div>
+      <div class="q-text" id="q-text"></div>
+      <div id="options-container"></div>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn-prev" id="btn-prev" onclick="prevQuestion()" disabled>上一题</button>
+      <button class="btn-next" id="btn-next" onclick="nextQuestion()" disabled>下一题</button>
+    </div>
+  </div>
+
+  <!-- 结果页 -->
+  <div id="result-page" class="result-page hidden">
+    <div class="result-card fade-in" id="result-card">
+      <!-- 动态填充 -->
+    </div>
+    <p class="share-tip">长按保存结果图<br>或截图分享给你的朋友 🌿</p>
+    <button class="btn-retest" onclick="restartTest()">重新测试</button>
+  </div>
+
+</div>
+
+<script>
+// ─────────────────────────────────────────
+// 题目数据（D1=感知 D2=能量 D3=决策 D4=生长）
+// 选项A=1分 → 对应维度高分方向
+// ─────────────────────────────────────────
+const questions = [
+  {
+    dim: "D1 感知偏好", dimLabel: "感知维度",
+    text: "你走进一个陌生的地方，你第一个注意到的是？",
+    options: [
+      { letter: "A", text: "颜色、味道、氛围，这里好舒服或好奇怪", scores: {D1:1,D2:0,D3:0,D4:0} },
+      { letter: "B", text: "这里有什么人，在做什么，结构是什么",      scores: {D1:0,D2:0,D3:0,D4:0} }
+    ]
+  },
+  {
+    dim: "D1 感知偏好", dimLabel: "感知维度",
+    text: "翻看一本手工杂志，你更想看的是？",
+    options: [
+      { letter: "A", text: "那些美丽的成品图和创作过程",   scores: {D1:1,D2:0,D3:0,D4:0} },
+      { letter: "B", text: "用了什么材料、步骤是什么、要注意什么", scores: {D1:0,D2:0,D3:0,D4:0} }
+    ]
+  },
+  {
+    dim: "D1 感知偏好", dimLabel: "感知维度",
+    text: "朋友发来一张照片，你的第一反应是？",
+    options: [
+      { letter: "A", text: "哇好美，被视觉打动了",        scores: {D1:1,D2:0,D3:0,D4:0} },
+      { letter: "B", text: "这张照片是在哪里拍的？用的什么相机？", scores: {D1:0,D2:0,D3:0,D4:0} }
+    ]
+  },
+  {
+    dim: "D1 感知偏好", dimLabel: "感知维度",
+    text: "你判断一棵植物是否健康，你的依据是？",
+    options: [
+      { letter: "A", text: "叶片有没有光泽、气味是不是清新",       scores: {D1:1,D2:0,D3:0,D4:0} },
+      { letter: "B", text: "有没有新芽、叶色正不正常、根有没有问题", scores: {D1:0,D2:0,D3:0,D4:0} }
+    ]
+  },
+  {
+    dim: "D2 能量来源", dimLabel: "能量维度",
+    text: "周末充电，你更想去哪里？",
+    options: [
+      { letter: "A", text: "阳光下、公园里、有风有树的地方",       scores: {D1:0,D2:1,D3:0,D4:0} },
+      { letter: "B", text: "图书馆、咖啡馆、一个安静的角落",        scores: {D1:0,D2:0,D3:0,D4:0} }
+    ]
+  },
+  {
+    dim: "D2 能量来源", dimLabel: "能量维度",
+    text: "和植物相处久了，你最享受的是？",
+    options: [
+      { letter: "A", text: "一起晒太阳、浇水时摸到叶片的瞬间",    scores: {D1:0,D2:1,D3:0,D4:0} },
+      { letter: "B", text: "观察它长出新叶子、开花、结果的过程",  scores: {D1:0,D2:0,D3:0,D4:0} }
+    ]
+  },
+  {
+    dim: "D2 能量来源", dimLabel: "能量维度",
+    text: "如果今天是晴天，你的心情通常是？",
+    options: [
+      { letter: "A", text: "整个人都亮了，想出门，想动起来",      scores: {D1:0,D2:1,D3:0,D4:0} },
+      { letter: "B", text: "没什么特别，照常过",                  scores: {D1:0,D2:0,D3:0,D4:0} }
+    ]
+  },
+  {
+    dim: "D2 能量来源", dimLabel: "能量维度",
+    text: "你觉得月光和阳光对你来说意味着什么？",
+    options: [
+      { letter: "A", text: "阳光是力量，月光是用来休息的",        scores: {D1:0,D2:1,D3:0,D4:0} },
+      { letter: "B", text: "白天和黑夜各有各的美，感受当下的光就好", scores: {D1:0,D2:0,D3:0,D4:0} }
+    ]
+  },
+  {
+    dim: "D3 决策方式", dimLabel: "决策维度",
+    text: "买一株新香草回家，你最看重的是？",
+    options: [
+      { letter: "A", text: "它闻起来好不好闻、看起来好不好看",    scores: {D1:0,D2:0,D3:1,D4:0} },
+      { letter: "B", text: "它好不好养、适不适合我家的环境",      scores: {D1:0,D2:0,D3:0,D4:0} }
+    ]
+  },
+  {
+    dim: "D3 决策方式", dimLabel: "决策维度",
+    text: "园艺书上说香草要见干见湿，但你的直觉是？",
+    options: [
+      { letter: "A", text: "先相信直觉，看土干了就浇",            scores: {D1:0,D2:0,D3:1,D4:0} },
+      { letter: "B", text: "还是按书上的方法来，比较稳妥",        scores: {D1:0,D2:0,D3:0,D4:0} }
+    ]
+  },
+  {
+    dim: "D3 决策方式", dimLabel: "决策维度",
+    text: "朋友说这棵植物很好养，你怎么想？",
+    options: [
+      { letter: "A", text: "那就试试，好不好养要自己试了才知道",  scores: {D1:0,D2:0,D3:1,D4:0} },
+      { letter: "B", text: "先查查资料，做好功课再下手",          scores: {D1:0,D2:0,D3:0,D4:0} }
+    ]
+  },
+  {
+    dim: "D3 决策方式", dimLabel: "决策维度",
+    text: "泡一杯香草茶来喝，你更在意的是？",
+    options: [
+      { letter: "A", text: "香气好不好闻、喝起来好不好喝、喝完心情好不好", scores: {D1:0,D2:0,D3:1,D4:0} },
+      { letter: "B", text: "用的是哪个品种、比例是多少、有什么功效",      scores: {D1:0,D2:0,D3:0,D4:0} }
+    ]
+  },
+  {
+    dim: "D4 生长方式", dimLabel: "生长维度",
+    text: "你觉得成长这件事，更接近以下哪个比喻？",
+    options: [
+      { letter: "A", text: "薄荷，向外蔓延，很快就能长满一盆",      scores: {D1:0,D2:0,D3:0,D4:1} },
+      { letter: "B", text: "迷迭香，一年一年往上长，年头越多越有味道", scores: {D1:0,D2:0,D3:0,D4:0} }
+    ]
+  },
+  {
+    dim: "D4 生长方式", dimLabel: "生长维度",
+    text: "你做一件事，更习惯的方式是？",
+    options: [
+      { letter: "A", text: "先开始再说，遇到问题再调整",           scores: {D1:0,D2:0,D3:0,D4:1} },
+      { letter: "B", text: "先想清楚方向，定好计划再动手",         scores: {D1:0,D2:0,D3:0,D4:0} }
+    ]
+  },
+  {
+    dim: "D4 生长方式", dimLabel: "生长维度",
+    text: "看到别人分享三个月打造阳台香草花园，你的反应是？",
+    options: [
+      { letter: "A", text: "好厉害，我也想试试",                   scores: {D1:0,D2:0,D3:0,D4:1} },
+      { letter: "B", text: "三个月够吗？香草长成这样需要多久啊",    scores: {D1:0,D2:0,D3:0,D4:0} }
+    ]
+  },
+  {
+    dim: "D4 生长方式", dimLabel: "生长维度",
+    text: "如果你是一株植物，你觉得自己更像是？",
+    options: [
+      { letter: "A", text: "薄荷，有活力，到处冒头，随时可以重新开始", scores: {D1:0,D2:0,D3:0,D4:1} },
+      { letter: "B", text: "迷迭香，慢，但长久了就有主干，不可替代",   scores: {D1:0,D2:0,D3:0,D4:0} }
+    ]
+  }
+];
+
+// ─────────────────────────────────────────
+// 16种人格结果数据（来自腾讯文档）
+// 维度条件：D1≥3为高分（外向感知），<3为低分（内向感知）
+//          D2≥3为高分（社交能量），<3为低分（独处能量）
+//          D3≥3为高分（直觉决策），<3为低分（理性决策）
+//          D4≥3为高分（灵活生长），<3为低分（稳妥生长）
+// ─────────────────────────────────────────
+const personalityTypes = {
+  // D1≥3 D2<3 D3≥3 D4≥3  → ENFP 薄荷
+  "0,0,1,1": {
+    type: "薄荷型", mbti: "ENFP", emoji: "🌿",
+    attrs: "行星属性：水星 ☿ · 元素：风 · 力量：沟通、活力、净化",
+    insight: "你像薄荷，走到哪就长到哪，味道清凉、刺激、让人瞬间清醒。不是有目的地去影响谁，就是那个味道一直在——推开门，闻到了，你就知道有人在。你不太会「规划」一段关系，你会直接走进去，然后你们就熟了。香草对你来说是入口，不是目的本身——你真正想要的，是那个「因为种了香草，我们开始聊天了」的瞬间。",
+    plant: "薄荷必须单独盆栽，每周摘一次顶芽，越摘越疯。推荐品种：留兰香、胡椒薄荷、巧克力薄荷——每种味道不一样，你也是。"
+  },
+  // D1≥3 D2<3 D3≥3 D4<3  → ENTP 柠檬马鞭草
+  "0,0,1,0": {
+    type: "柠檬马鞭草型", mbti: "ENTP", emoji: "🌿",
+    attrs: "行星属性：金星 ♀（阴性） · 元素：土 · 力量：爱情、保护、净化、青春、疗愈",
+    insight: "你像柠檬马鞭草，不张扬，不强出头，但走进就会发现它的香气一直在。有人说你是「安静地有趣」——你觉得这个评价比「热情」更准确。你对人有好奇心，但不是那种社交型的，你更喜欢一对一的深入。你不会主动去讨好谁，但如果你发现对方有意思，你会认真地问问题，让对方觉得自己被看见了。",
+    plant: "喜温暖，怕积水，越懒越旺。给它阳光和空间，然后忘掉它。搭配香蜂草，两种温柔力量在一起。"
+  },
+  // D1<3 D2≥3 D3≥3 D4≥3  → ENTJ 月桂
+  "1,1,1,1": {
+    type: "月桂型", mbti: "ENTJ", emoji: "🌿",
+    attrs: "行星属性：太阳 ☀️ · 元素：火 · 力量：保护、灵力、治疗、净化、力气、成功",
+    insight: "你像月桂，不需要解释自己在哪里，也不解释为什么站在那里。你不是冷漠，是有方向感——你自己知道要去哪，别人跟着走就是了。你说话直接，不绕弯子，但这不是刻薄，是尊重彼此的时间。你的照顾方式是有框架的：你把事情安排好了，每个人都知道该做什么，这是你最舒服的温柔。",
+    plant: "给月桂一个足够大的盆，让它成为阳台的垂直中心。围绕它规划其他香草的位置，每月修一次形，让轮廓保持清晰。"
+  },
+  // D1<3 D2≥3 D3≥3 D4<3  → ESFJ 薰衣草
+  "1,1,1,0": {
+    type: "薰衣草型", mbti: "ESFJ", emoji: "🌿",
+    attrs: "行星属性：太阳 ☀️（阴性） · 元素：风 · 力量：爱情、净化、保护、和平、疗愈",
+    insight: "你像薰衣草，不说话，整个房间已经因为你在而变得不一样。别人可能不知道你好在哪里，但他们知道自己坐在你旁边的时候，会松一口气。这不是表演，是你的默认值——你照顾人的时候，自己都不知道自己在照顾。你有时候会觉得累，因为给的太多了，但下次还是一样。",
+    plant: "怕积水，盆底垫陶粒，晒得到太阳的C位。每次浇水前摸土，完全干透再浇。"
+  },
+  // D1<3 D2<3 D3≥3 D4≥3  → ESTJ 迷迭香
+  "1,0,1,1": {
+    type: "迷迭香型", mbti: "ESTJ", emoji: "🌿",
+    attrs: "行星属性：太阳 ☀️ · 元素：火 · 力量：记忆、净化、力量、爱，保护、驱邪",
+    insight: "你像迷迭香，不是那种第一眼就记住的香草，但种了三年之后，你发现它是阳台上最可靠的那一株。你说话有根有据，做事有板有眼，约好的事情一定会发生。你不太会说好听的话，但这不是不会——你觉得做了就是说了。你的陪伴不是靠热闹堆出来的，是靠一直在。",
+    plant: "耐旱怕湿，固定每周六检查一次，修剪、浇水、记录。三年以上的迷迭香主干有手指粗——那是时间给你的奖赏。"
+  },
+  // D1≥3 D2≥3 D3<3 D4≥3  → ENFJ 天竺葵
+  "0,1,0,1": {
+    type: "天竺葵型", mbti: "ENFJ", emoji: "🌿",
+    attrs: "行星属性：金星 ♀ · 元素：土/水 · 力量：爱、美、繁荣、保护、疗愈",
+    insight: "你像玫瑰天竺葵，花开得热闹，颜色丰富，谁看了都心情好。你是那种「有你在就不会冷场」的人——不是你在说话，是你的气场让空气变得松了一点。你自然而然地知道什么时候该说话、什么时候该安静。你不一定是最聪明的，但你是那个让大家都愿意继续待下去的人。",
+    plant: "花谢后及时摘残花，花期更长。分株送给朋友——不需要理由，就是一份好看又好闻的心意。"
+  },
+  // D1≥3 D2≥3 D3<3 D4<3  → ESFP 香蜂草
+  "0,1,0,0": {
+    type: "香蜂草型", mbti: "ESFP", emoji: "🌿",
+    attrs: "行星属性：月亮 ☽ · 木星 ♃ · 力量：治愈、成功、爱、保护、驱邪",
+    insight: "你像香蜂草，一碰就有香气，不需要知识，不需要仪式。你是那种「直接上来就好」的人——不用准备，不用想好该说什么，你在那里，气氛就对了。你不太记仇，也不爱翻旧账，事情过了就是过了。你活在当下，而且活在当下的能力特别强，这让跟你在一起的人也觉得可以松一口气。",
+    plant: "插枝繁殖极其简单，剪一枝插土里，三天生根。给朋友演示一次——这比说一百句话都有用。"
+  },
+  // D1≥3 D2≥3 D3≥3 D4<3  → ESTP 香菜
+  "0,1,1,0": {
+    type: "香菜型", mbti: "ESTP", emoji: "🌿",
+    attrs: "行星属性：水星 ☿ · 元素：风 · 力量：沟通、保护、净化、爱、驱邪",
+    insight: "你像香菜，爱憎分明——有人觉得它是世界上最重要的调味料，有人闻到就想躲。而你完全不在乎别人怎么看。你喜欢就是喜欢，不喜欢就是不喜欢，不需要解释，也不需要对方同意。你的判断直接、快速、凭直觉，你很少后悔自己的选择，因为你是真的做了选择之后才说出来的人。",
+    plant: "两季种，春天和秋天。种了马上能吃，吃完马上再种。给它一个固定位置——你的「随手香草Station」。"
+  },
+  // D1<3 D2≥3 D3<3 D4≥3  → ISTJ 罗勒
+  "1,1,0,1": {
+    type: "罗勒型", mbti: "ISTJ", emoji: "🌿",
+    attrs: "行星属性：木星 ♃ · 元素：火 · 力量：力量、成功、保护、净化、爱、提升",
+    insight: "你像罗勒，有自己的季节感，知道什么时候该做什么事。不是不会变通，是有些事情你认定就是这样，改不了。你做事有板有眼，约好的时间就是约好的时间，说好的事情就是会做到。你不是没有热情，你只是把热情放在了对的时机——春天播种，夏天旺长，冬天休息，节奏比热情更重要。",
+    plant: "怕冷，低于10℃要搬进室内。记一本种植日志，从播种到采收到留种。推荐：甜罗勒、圣罗勒。"
+  },
+  // D1<3 D2≥3 D3<3 D4<3  → ISFJ 洋甘菊
+  "1,1,0,0": {
+    type: "洋甘菊型", mbti: "ISFJ", emoji: "🌿",
+    attrs: "行星属性：太阳 ☀️（阴性） · 元素：水 · 力量：净化、疗愈、爱、保护、和平",
+    insight: "你像洋甘菊，不争不抢，不站C位，但没有人会忘记你存在过。你可能是那种不太会说「不」的人，但这不是因为软弱，是因为你真的在乎对方会不会难过。你不太需要被感谢，但你会记得别人对你好的细节，记很久。你照顾人的方式是安静的：东西收好了，热水烧好了，你先到了。",
+    plant: "夏天开完花可以采收晒干，做自己的花草茶。多年生，每年春天会自己回来。放在有散射光的窗台即可。"
+  },
+  // D1<3 D2<3 D3≥3 D4<3  → INTJ 迷迭香（木本）
+  "1,0,1,0": {
+    type: "迷迭香（木本）型", mbti: "INTJ", emoji: "🌿",
+    attrs: "行星属性：太阳 ☀️ · 元素：火 · 力量：记忆、净化、力量、爱，保护、驱邪",
+    insight: "你像迷迭香，不是那种第一眼就记住的香草，但认识得越深，越觉得有味道。你不是不会聊天，是你不太愿意聊你觉得没价值的东西。你的时间有价格——不是钱，是意义。你有自己完整的世界，进去的人不多，但进去的人会发现里面其实挺有意思的。",
+    plant: "种三年以上的价值才开始显现。给它时间，让它长成有主干的样子。第三年的迷迭香，是你给自己的长期主义答卷。"
+  },
+  // D1<3 D2<3 D3<3 D4≥3  → INFJ 鼠尾草
+  "1,0,0,1": {
+    type: "鼠尾草型", mbti: "INFJ", emoji: "🌿",
+    attrs: "行星属性：月亮 ☽ · 木星 ♃ · 力量：智慧、直觉、洞察、净化、守护",
+    insight: "你像鼠尾草，第一年可能只是几片叶子，安静到让人忘记它的存在；第二年才抽出花穗，蓝色的一串，风吹过来，你才知道它一直在。你知道自己不是那种很快就能被理解的人，但你觉得没关系——你也没打算让所有人都理解你。你习惯一个人消化很多事，消化完之后，说出来的那句话往往特别准。",
+    plant: "需要耐心。第一年只观察，第二年才动手。学会放手让植物按自己的节奏长——是一件很难但很值得的事。"
+  },
+  // D1≥3 D2<3 D3<3 D4≥3  → INTP 胡椒薄荷
+  "0,0,0,1": {
+    type: "胡椒薄荷型", mbti: "INTP", emoji: "🌿",
+    attrs: "行星属性：水星 ☿ · 元素：风 · 力量：智慧、沟通、净化、旅行、活力",
+    insight: "你像胡椒薄荷——40多种，每种都不一样，你觉得知道这40种的差别是件很有意思的事。你是那种「不是因为有用才想知道」的人，你想知道，是因为想知道。你可能说了一个很冷门的知识点，然后发现自己在笑，因为你觉得这个知识点本身就很好笑，别人不笑是因为他们不懂。",
+    plant: "收集三种以上的薄荷品种，分别盆栽，标注清楚。品种必须分开，否则杂交。品种之间的差别——这是你的私人图鉴，不需要任何人认可。"
+  },
+  // D1<3 D2<3 D3<3 D4<3  → INFP 紫罗兰
+  "1,0,0,0": {
+    type: "紫罗兰型", mbti: "INFP", emoji: "🌿",
+    attrs: "行星属性：月亮 ☽ · 金星 ♀ · 力量：谦逊、灵性、内在价值、精神之爱、疗愈",
+    insight: "你像紫罗兰，在角落里静静开花，不争阳光，不求关注，但一旦有人蹲下来看到了，就很难移开眼睛。你不觉得自己需要被所有人喜欢，但你希望被一小部分人真正地理解。你有自己相信的东西，而且相信得比较深，不容易被动摇。你有时候会觉得自己想太多了，但你想的这些问题，其实挺重要的。",
+    plant: "放在有散射光的窗台，不需要直射阳光。它不需要太多照顾，它需要你偶尔记得它。"
+  },
+  // D1≥3 D2<3 D3<3 D4<3  → ISFP 百里香
+  "0,0,0,0": {
+    type: "百里香型", mbti: "ISFP", emoji: "🌿",
+    attrs: "行星属性：金星 ♀ · 元素：火/水 · 力量：勇气、力量、治愈，保护、爱、净化",
+    insight: "你像百里香，匍匐生长，低矮贴地，从不站在C位。但踩过去有香气，蹲下来才发现它铺满了一片。你是那种「不需要说话就能让人觉得舒服」的人——你可能自己都没意识到这件事。你的温柔不是表演来的，是你本来就是这样。你的存在本身，就在安静地治愈着什么。",
+    plant: "是地被型香草，让它从盆边自然垂下来，让它自己长成它想成为的样子。"
+  },
+};
+
+// ─────────────────────────────────────────
+// 状态
+// ─────────────────────────────────────────
+let currentQ = 0;
+let answers = new Array(16).fill(null); // 0=A, 1=B
+let dimScores = { D1: 0, D2: 0, D3: 0, D4: 0 };
+
+// ─────────────────────────────────────────
+// 逻辑
+// ─────────────────────────────────────────
+function startTest() {
+  document.getElementById('cover').classList.add('hidden');
+  document.getElementById('test-area').classList.remove('hidden');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = questions[currentQ];
+  document.getElementById('q-number').textContent = '第 ' + (currentQ + 1) + ' / 16 题';
+  document.getElementById('q-dim-label').textContent = q.dimLabel;
+  document.getElementById('q-text').textContent = q.text;
+  document.getElementById('progress-text').textContent = '第 ' + (currentQ + 1) + ' / 16 题';
+  document.getElementById('progress-fill').style.width = ((currentQ) / 16 * 100) + '%';
+
+  const container = document.getElementById('options-container');
+  container.innerHTML = '';
+  q.options.forEach((opt, idx) => {
+    const div = document.createElement('div');
+    div.className = 'option' + (answers[currentQ] === idx ? ' selected' : '');
+    div.innerHTML = '<span class="option-letter">' + opt.letter + '</span><span>' + opt.text + '</span>';
+    div.onclick = () => selectOption(idx);
+    container.appendChild(div);
+  });
+
+  document.getElementById('btn-prev').disabled = currentQ === 0;
+  updateNextBtn();
+}
+
+function selectOption(idx) {
+  answers[currentQ] = idx;
+  document.querySelectorAll('.option').forEach((el, i) => {
+    el.classList.toggle('selected', i === idx);
+  });
+  updateNextBtn();
+}
+
+function updateNextBtn() {
+  const btn = document.getElementById('btn-next');
+  btn.disabled = answers[currentQ] === null;
+  if (currentQ === 15) {
+    btn.textContent = '查看结果';
+  } else {
+    btn.textContent = '下一题';
+  }
+}
+
+function nextQuestion() {
+  if (answers[currentQ] === null) return;
+
+  // 更新进度
+  document.getElementById('progress-fill').style.width = ((currentQ + 1) / 16 * 100) + '%';
+
+  if (currentQ < 15) {
+    currentQ++;
+    // 重新触发动画
+    const card = document.getElementById('question-card');
+    card.classList.remove('fade-in');
+    void card.offsetWidth;
+    card.classList.add('fade-in');
+    renderQuestion();
+  } else {
+    showResult();
+  }
+}
+
+function prevQuestion() {
+  if (currentQ > 0) {
+    currentQ--;
+    const card = document.getElementById('question-card');
+    card.classList.remove('fade-in');
+    void card.offsetWidth;
+    card.classList.add('fade-in');
+    renderQuestion();
+  }
+}
+
+function calculateScores() {
+  dimScores = { D1: 0, D2: 0, D3: 0, D4: 0 };
+  answers.forEach((ans, qIdx) => {
+    if (ans !== null) {
+      const q = questions[qIdx];
+      const opt = q.options[ans];
+      dimScores.D1 += opt.scores.D1;
+      dimScores.D2 += opt.scores.D2;
+      dimScores.D3 += opt.scores.D3;
+      dimScores.D4 += opt.scores.D4;
+    }
+  });
+}
+
+function matchPersonality() {
+  const d1 = dimScores.D1 >= 3 ? 1 : 0;
+  const d2 = dimScores.D2 >= 3 ? 1 : 0;
+  const d3 = dimScores.D3 >= 3 ? 1 : 0;
+  const d4 = dimScores.D4 >= 3 ? 1 : 0;
+  const key = d1 + ',' + d2 + ',' + d3 + ',' + d4;
+
+  // 姜黄特殊处理：D1<3, D2≥3, D3≥3, D4≥3（key="1,1,1,1" 与月桂key相同，优先判断）
+  if (dimScores.D1 < 3 && dimScores.D2 >= 3 && dimScores.D3 >= 3 && dimScores.D4 >= 3) {
+    return {
+      type: "姜黄型", mbti: "ISTP", emoji: "🌿",
+      attrs: "行星属性：太阳 ☀️ / 木星 ♃ · 元素：火/土 · 力量：力量、净化、成功、保护、繁荣",
+      insight: "你像姜黄，块茎深埋地下，蓄积能量，等到对的时机才出来。不是慢，是知道自己的节奏。你的颜色是太阳的金黄，但你不是一个会说漂亮话的人——你是那种直接解决问题的人：切开，用。别人遇到问题会想很久，你会先动手，然后边做边想。你不太需要别人理解你在做什么，你理解自己在做什么就够了。",
+      plant: "需要深盆（30cm以上）和耐心：春种秋收。种下去之后大部分时间不用管。表面覆土3-5cm，保持湿润即可。"
+    };
+  }
+
+  return personalityTypes[key] || {
+    type: "未知", mbti: "?", emoji: "🌿",
+    attrs: "",
+    insight: "未找到匹配人格",
+    plant: ""
+  };
+}
+
+function showResult() {
+  try {
+    calculateScores();
+    const result = matchPersonality();
+
+    document.getElementById('test-area').classList.add('hidden');
+    const resultPage = document.getElementById('result-page');
+    resultPage.classList.remove('hidden');
+    resultPage.style.display = 'block';
+    document.getElementById('progress-fill').style.width = '100%';
+
+    const card = document.getElementById('result-card');
+    card.classList.remove('fade-in');
+    void card.offsetWidth;
+    card.innerHTML = `
+    <div class="result-emoji">${result.emoji}</div>
+    <div class="result-type">${result.type}</div>
+    <div class="result-mbti">${result.mbti}</div>
+    <div class="result-divider"></div>
+
+    <div class="attr-block">
+      <div class="attr-title">【香草属性】</div>
+      <div class="attr-text">${result.attrs}</div>
+    </div>
+
+    <div class="insight-block">
+      <div class="insight-title">【香草人格】</div>
+      <div class="insight-text">${result.insight}</div>
+    </div>
+
+    <div class="plant-block">
+      <div class="plant-title">【种植建议】</div>
+      <div class="plant-text">${result.plant}</div>
+    </div>
+    `;
+    card.classList.add('fade-in');
+  } catch(e) {
+    alert('出错了：' + e.message);
+  }
+}
+
+function restartTest() {
+  currentQ = 0;
+  answers = new Array(16).fill(null);
+  dimScores = { D1: 0, D2: 0, D3: 0, D4: 0 };
+  document.getElementById('result-page').classList.add('hidden');
+  document.getElementById('test-area').classList.remove('hidden');
+  renderQuestion();
+}
+</script>
+</body>
+</html>
